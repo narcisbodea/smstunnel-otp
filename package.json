@@ -1,6 +1,6 @@
 {
   "name": "@narcisbodea/smstunnel-otp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Send the sign-in and verification codes of Supabase Auth, Auth0, Clerk, Better Auth and Ory from your own Android phone and number with SMSTunnel. Zero dependencies: Fetch and WebCrypto only.",
   "keywords": [
     "smstunnel",
@@ -23,6 +23,13 @@
   "author": "Narcis Bodea <contact@narboweb.ro>",
   "license": "MIT",
   "homepage": "https://smstunnel.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/narcisbodea/smstunnel-otp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/narcisbodea/smstunnel-otp/issues"
+  },
   "publishConfig": {
     "access": "public"
   },

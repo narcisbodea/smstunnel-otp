@@ -18,7 +18,7 @@ npm install @narcisbodea/smstunnel-otp
 
 1. Install the [SMSTunnel app from Google Play](https://play.google.com/store/apps/details?id=io.smstunnel.app) on your Android phone and sign in. Sign in at [smstunnel.io](https://smstunnel.io) with the same account: the phone appears under **Phones**.
 2. In your SMSTunnel dashboard, open **Apps** → **Add an app** and create its key (sending texts is all it needs). Keep the key in your platform's secrets, never in client code.
-3. Keep the default **6-digit** codes. SMSTunnel's code endpoint recognizes codes of 4, 6, 7 or 8 digits. If you change the code length (in Auth0 or Better Auth, for example), pick one of these.
+3. Codes must be **4 to 10 digits** (the default 6-digit codes of every platform below are fine). SMSTunnel's code endpoint doesn't accept codes with letters.
 
 If your phone is offline, the code waits and goes out as soon as the phone is back.
 
