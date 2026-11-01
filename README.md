@@ -16,8 +16,8 @@ npm install @narcisbodea/smstunnel-otp
 
 ## Before you start
 
-1. Install the [SMSTunnel app from Google Play](https://play.google.com/store/apps/details?id=io.smstunnel.app) on your Android phone and sign in. Sign in at [smstunnel.io](https://smstunnel.io) with the same account: the phone appears under **Devices**.
-2. In your SMSTunnel dashboard, create an API key with the `sms:send` permission. Keep it in your platform's secrets, never in client code.
+1. Install the [SMSTunnel app from Google Play](https://play.google.com/store/apps/details?id=io.smstunnel.app) on your Android phone and sign in. Sign in at [smstunnel.io](https://smstunnel.io) with the same account: the phone appears under **Phones**.
+2. In your SMSTunnel dashboard, open **Apps** → **Add an app** and create its key (sending texts is all it needs). Keep the key in your platform's secrets, never in client code.
 3. Keep the default **6-digit** codes. SMSTunnel's code endpoint recognizes codes of 4, 6, 7 or 8 digits. If you change the code length (in Auth0 or Better Auth, for example), pick one of these.
 
 If your phone is offline, the code waits and goes out as soon as the phone is back.
@@ -40,7 +40,7 @@ Deno.serve(
 );
 ```
 
-A ready copy, with a `deno.json` for the import, is in [`examples/supabase/functions/send-sms`](examples/supabase/functions/send-sms).
+A ready copy, with a `deno.json` for the import, is in [`examples/supabase/functions/send-sms`](https://cdn.jsdelivr.net/npm/@narcisbodea/smstunnel-otp/examples/supabase/functions/send-sms/).
 
 1. Deploy it without JWT checks (the signature protects it): `supabase functions deploy send-sms --no-verify-jwt`
 2. Dashboard → **Authentication → Hooks** → **Add a new hook** → **Send SMS hook** → type **HTTPS**, URL `https://<project-ref>.supabase.co/functions/v1/send-sms` → **Generate secret** → **Create**.
@@ -90,7 +90,7 @@ Save, then use **Send Test Message**. For MFA, also turn on **Use Tenant-Level M
 - Failures are reported to Auth0 as documented. Rate limits and network errors call `api.notification.retry(reason)`, which Auth0 retries up to 5 times. A bad key or a bad number calls `api.notification.drop(reason)`.
 - SMSTunnel sends text messages only. A voice delivery is dropped with a clear reason; set the delivery method to **Text**.
 
-If you'd rather not add a dependency, [`examples/auth0/custom-phone-provider.no-dependency.js`](examples/auth0/custom-phone-provider.no-dependency.js) does the same in about twenty lines.
+If you'd rather not add a dependency, [`examples/auth0/custom-phone-provider.no-dependency.js`](https://cdn.jsdelivr.net/npm/@narcisbodea/smstunnel-otp/examples/auth0/custom-phone-provider.no-dependency.js) does the same in about twenty lines.
 
 ### Send Phone Message (MFA)
 
@@ -129,7 +129,7 @@ export const POST = createClerkSmsWebhook({
 
 It sends `data.to_phone_number` the text Clerk rendered (`data.message`) through the 2FA endpoint, making sure `data.data.otp_code` is in it. Events with `delivered_by_clerk: true` and other event types get a `200` and nothing is sent. Templates without a code are sent as regular texts; pass `nonCodeMessages: 'skip'` to ignore them. A bad signature answers `400`.
 
-Other frameworks: `handler.process({ method, headers, body })` returns `{ status, headers, body }`. It needs the raw body; see [`examples/clerk/express.mjs`](examples/clerk/express.mjs).
+Other frameworks: `handler.process({ method, headers, body })` returns `{ status, headers, body }`. It needs the raw body; see [`examples/clerk/express.mjs`](https://cdn.jsdelivr.net/npm/@narcisbodea/smstunnel-otp/examples/clerk/express.mjs).
 
 ## Better Auth: `phoneNumber` plugin
 
@@ -154,7 +154,7 @@ Better Auth runs `sendOTP` in the background when it can, so sign-in doesn't wai
 
 ## Ory: Kratos and Ory Network
 
-No code needed: Ory's courier HTTP channel calls SMSTunnel directly. Merge this into your identity config ([`examples/ory/kratos.courier.yml`](examples/ory/kratos.courier.yml)):
+No code needed: Ory's courier HTTP channel calls SMSTunnel directly. Merge this into your identity config ([`examples/ory/kratos.courier.yml`](https://cdn.jsdelivr.net/npm/@narcisbodea/smstunnel-otp/examples/ory/kratos.courier.yml)):
 
 ```yaml
 courier:
@@ -175,7 +175,7 @@ courier:
             in: header
 ```
 
-The `body` is this Jsonnet, base64-encoded ([`examples/ory/smstunnel-sms.jsonnet`](examples/ory/smstunnel-sms.jsonnet); self-hosted Kratos can also use `file://…`):
+The `body` is this Jsonnet, base64-encoded ([`examples/ory/smstunnel-sms.jsonnet`](https://cdn.jsdelivr.net/npm/@narcisbodea/smstunnel-otp/examples/ory/smstunnel-sms.jsonnet); self-hosted Kratos can also use `file://…`):
 
 ```jsonnet
 function(ctx) {
@@ -223,18 +223,9 @@ A webhook that fails the signature check throws `WebhookVerificationError` (insi
 - Each handler remembers recent webhook ids, so a retry of a code that already went out isn't sent twice. This memory is per instance.
 - Nothing in this package logs codes or keys.
 
-## Development
+## Tests
 
-```bash
-npm install
-npm run build        # ESM + CJS + types in dist/
-npm run typecheck
-npm test             # unit tests (mocked fetch), CJS build, Node 18 WebCrypto fallback
-SMSTUNNEL_LOCAL_KEY_FILE=key.json npm run test:e2e   # every adapter against a LOCAL SMSTunnel API ({ serverUrl, apiKey, deviceId }), never production
-DENO_BIN=deno npm run test:deno   # the Supabase example, run by Deno, against the local API
-```
-
-The Ory config is checked with a real Kratos in Docker; the steps are at the top of [`test/ory/make-config.mjs`](test/ory/make-config.mjs).
+Unit tests use a mocked Fetch. Every adapter was also run end to end against a local SMSTunnel server, the Supabase example under Deno, and the Ory config with a real Kratos in Docker.
 
 ## License
 
