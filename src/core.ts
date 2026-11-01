@@ -12,7 +12,7 @@ export const MAX_CODE_TEXT_LENGTH = 320;
 
 /** How to reach your SMSTunnel account. Shared by every function in this package. */
 export interface SmsTunnelConnection {
-  /** Your SMSTunnel API key (dashboard → API Keys), with the `sms:send` permission. Sent as `X-API-Key`. */
+  /** Your SMSTunnel API key (dashboard → Apps → Add an app), with the `sms:send` permission. Sent as `X-API-Key`. */
   apiKey: string;
   /** `https://smstunnel.io` unless you run your own instance. */
   serverUrl?: string;

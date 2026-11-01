@@ -217,6 +217,59 @@ Everything throws (or reports) a `SmsTunnelOtpError`:
 
 A webhook that fails the signature check throws `WebhookVerificationError` (inside the Supabase and Clerk handlers it becomes a 401 or 400 answer, and nothing is sent). `verifyWebhook()` and `signWebhook()` are exported if you need the check elsewhere.
 
+## Build it with an AI assistant
+
+Paste this into Claude, ChatGPT, Cursor or Copilot, keep the line for your platform (delete the other four) and replace the part in brackets. Don't paste your API key into the chat: the prompt doesn't need it.
+
+```text
+Help me send my auth platform's sign-in codes from my own phone, with SMSTunnel.
+
+About SMSTunnel (https://smstunnel.io): my own apps and tools hand text messages (SMS) to my
+SMSTunnel account, and my own Android phone sends them from my own number, on my own SIM and plan.
+The phone runs the SMSTunnel app from Google Play
+(https://play.google.com/store/apps/details?id=io.smstunnel.app), signed in to my account.
+
+What I want: [describe what should send a text, to whom, and when]
+
+My platform (keep the line for yours, delete the others):
+- Supabase Auth: Send SMS hook (HTTPS), an Edge Function: Deno.serve(createSupabaseSendSmsHook({
+  apiKey, hookSecret })) from 'npm:@narcisbodea/smstunnel-otp@^1.0.0', deployed with
+  --no-verify-jwt; secrets SMSTUNNEL_API_KEY and SEND_SMS_HOOK_SECRETS ('v1,whsec_...').
+- Auth0: exports.onExecuteCustomPhoneProvider calls createAuth0CustomPhoneProvider() in an Action on
+  the custom-phone-provider trigger (Branding → Phone Provider → Custom, Text); dependency
+  @narcisbodea/smstunnel-otp, secret SMSTUNNEL_API_KEY; MFA only: createAuth0SendPhoneMessage().
+- Clerk: the sms.created webhook, createClerkSmsWebhook({ apiKey, signingSecret }), a Fetch handler
+  (Next.js: export const POST; others: handler.process({ method, headers, body }) with the raw
+  body). Turn "Delivered by Clerk" off per SMS template; keep the route public.
+- Better Auth: phoneNumber({ sendOTP: smstunnelSendOTP({ apiKey, template }) }), and
+  sendPasswordResetOTP the same way; options defaultCountryCode, deviceId, timeoutMs.
+- Ory (Kratos or Ory Network), no package: courier HTTP channel id sms, POST
+  https://smstunnel.io/api/v1/sms/send-2fa, Content-Type: application/json, auth api_key as header
+  X-API-Key, body base64 of the Jsonnet function(ctx) { to: ctx.recipient, message: ctx.body }.
+
+How it works:
+- npm install @narcisbodea/smstunnel-otp (no dependencies; Node 18+, Deno, Bun, Cloudflare Workers,
+  Auth0 Actions); other platforms: sendCode({ apiKey, to, code, template }); templates use {code}.
+  Errors are SmsTunnelOtpError (status, code such as PERMISSION_REQUIRED, retryable, message).
+- Codes go through SMSTunnel's POST https://smstunnel.io/api/v1/sms/send-2fa: the text must contain
+  the code as 4 to 10 digits and can be up to 320 characters. Codes have their own daily allowance.
+  If the phone is offline, the code waits and goes out when it is back.
+- The API key comes from my SMSTunnel dashboard (https://dashboard.smstunnel.io): Apps → Add an app
+  → Create the key. It is shown only once and can send texts and check whether they went out.
+
+Rules for your answer:
+- Keep the API key in an environment variable or the platform's secret store (for example
+  SMSTUNNEL_API_KEY). Never put it in source code, in a repository, or in code that runs in a
+  browser or a mobile app: call SMSTunnel from a server. I will not paste my key in this chat; use a
+  placeholder.
+- Validate phone numbers before sending (international format, like +14155550123) and skip or report
+  the invalid ones.
+- Handle errors: log or show what went wrong, retry only after 429, 5xx or network errors and only a
+  few times, and never send the same text twice.
+- Only send texts people expect from me: alerts to myself, reminders, sign-in codes, updates they
+  asked for. No unsolicited texts.
+```
+
 ## Security notes
 
 - Signatures are checked over the raw body before anything is parsed. Old or future timestamps (more than 5 minutes off) are refused, and malformed or short secrets fail at start-up.
