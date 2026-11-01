@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.tgz
+.env
+.env.*
+*.log
+local-test-key.json
+%TEMP%*
+test/ory/kratos.yml

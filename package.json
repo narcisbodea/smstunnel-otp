@@ -1,0 +1,70 @@
+{
+  "name": "@narcisbodea/smstunnel-otp",
+  "version": "1.0.0",
+  "description": "Send the sign-in and verification codes of Supabase Auth, Auth0, Clerk, Better Auth and Ory from your own Android phone and number with SMSTunnel. Zero dependencies: Fetch and WebCrypto only.",
+  "keywords": [
+    "smstunnel",
+    "otp",
+    "sms",
+    "verification-code",
+    "sign-in-code",
+    "2fa",
+    "own-number",
+    "android-sms",
+    "supabase-auth-hook",
+    "send-sms-hook",
+    "auth0-actions",
+    "custom-phone-provider",
+    "clerk",
+    "better-auth",
+    "ory-kratos",
+    "standard-webhooks"
+  ],
+  "author": "Narcis Bodea <contact@narboweb.ro>",
+  "license": "MIT",
+  "homepage": "https://smstunnel.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/narcisbodea/smstunnel-otp.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test test/unit.test.mjs test/cjs.test.cjs test/no-global-crypto.test.mjs",
+    "test:e2e": "node --test test/e2e.local.test.mjs",
+    "test:deno": "node test/deno/supabase-example.e2e.mjs",
+    "prepublishOnly": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}

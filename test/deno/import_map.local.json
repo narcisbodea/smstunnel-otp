@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@narcisbodea/smstunnel-otp": "../../dist/index.mjs"
+  }
+}

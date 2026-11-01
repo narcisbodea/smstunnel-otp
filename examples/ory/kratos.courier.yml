@@ -1,0 +1,25 @@
+# Ory (Kratos self-hosted, or Ory Network through `ory update identity-config`): send SMS codes through SMSTunnel.
+# Merge this into your identity config. The body below is base64 of ./smstunnel-sms.jsonnet:
+#
+#   function(ctx) {
+#     to: ctx.recipient,
+#     message: ctx.body,
+#   }
+#
+# Self-hosted Kratos can point to the file instead: body: file:///etc/config/kratos/smstunnel-sms.jsonnet
+courier:
+  channels:
+    - id: sms
+      type: http
+      request_config:
+        url: https://smstunnel.io/api/v1/sms/send-2fa
+        method: POST
+        body: base64://ZnVuY3Rpb24oY3R4KSB7CiAgdG86IGN0eC5yZWNpcGllbnQsCiAgbWVzc2FnZTogY3R4LmJvZHksCn0K
+        headers:
+          Content-Type: application/json
+        auth:
+          type: api_key
+          config:
+            name: X-API-Key
+            value: YOUR_SMSTUNNEL_API_KEY
+            in: header

@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@narcisbodea/smstunnel-otp": "npm:@narcisbodea/smstunnel-otp@^1.0.0"
+  }
+}
